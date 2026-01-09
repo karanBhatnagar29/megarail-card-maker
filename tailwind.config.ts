@@ -46,6 +46,13 @@ export default {
         card: {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
+          orange: "hsl(var(--card-orange))",
+          "orange-light": "hsl(var(--card-orange-light))",
+          "orange-dark": "hsl(var(--card-orange-dark))",
+          yellow: "hsl(var(--card-yellow))",
+          "yellow-light": "hsl(var(--card-yellow-light))",
+          text: "hsl(var(--card-text))",
+          border: "hsl(var(--card-border))",
         },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
@@ -57,6 +64,11 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+      },
+      fontFamily: {
+        display: ['Playfair Display', 'serif'],
+        sans: ['Inter', 'system-ui', 'sans-serif'],
+        card: ['Times New Roman', 'Times', 'serif'],
       },
       borderRadius: {
         lg: "var(--radius)",
