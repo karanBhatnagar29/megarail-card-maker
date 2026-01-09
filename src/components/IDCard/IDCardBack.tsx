@@ -5,17 +5,13 @@ import { format } from 'date-fns';
 interface IDCardBackProps {
   data: CardDataComplete;
   sealUrl?: string;
+  cardId?: string;
 }
 
-const IDCardBack = ({ data, sealUrl }: IDCardBackProps) => {
-  const qrData = JSON.stringify({
-    name: data.employeeName,
-    designation: data.designation,
-    mobile: data.mobileNumber,
-    aadhar: data.adharCardNumber,
-    cardNo: data.cardNo,
-    validTill: data.validTill,
-  });
+const IDCardBack = ({ data, sealUrl, cardId }: IDCardBackProps) => {
+  // QR data points to card view page
+  const baseUrl = window.location.origin;
+  const qrData = `${baseUrl}/card/${cardId || data._id || ''}`;
 
   const formatDate = (dateStr: string) => {
     if (!dateStr) return '';
@@ -28,8 +24,8 @@ const IDCardBack = ({ data, sealUrl }: IDCardBackProps) => {
 
   return (
     <div 
-      className="id-card-scaled bg-card-orange rounded-lg overflow-hidden shadow-xl border-2 border-card-border relative"
-      style={{ aspectRatio: '87/54' }}
+      className="bg-card-orange rounded-lg overflow-hidden shadow-xl border-2 border-card-border relative"
+      style={{ width: '320px', height: '200px' }}
     >
       {/* Vertical ON CONTRACT text - Left side */}
       <div className="absolute left-0 top-0 bottom-0 w-6 bg-card-orange-dark flex items-center justify-center">

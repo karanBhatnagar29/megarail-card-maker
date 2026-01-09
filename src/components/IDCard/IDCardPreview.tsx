@@ -7,11 +7,12 @@ interface IDCardPreviewProps {
   photoPreview?: string;
   signPreview?: string;
   sealPreview?: string;
+  cardId?: string;
 }
 
-const IDCardPreview = ({ data, photoPreview, signPreview, sealPreview }: IDCardPreviewProps) => {
+const IDCardPreview = ({ data, photoPreview, signPreview, sealPreview, cardId }: IDCardPreviewProps) => {
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 flex flex-col items-center">
       <div>
         <h3 className="text-sm font-medium text-muted-foreground mb-3 text-center">Front Side</h3>
         <IDCardFront 
@@ -24,7 +25,8 @@ const IDCardPreview = ({ data, photoPreview, signPreview, sealPreview }: IDCardP
         <h3 className="text-sm font-medium text-muted-foreground mb-3 text-center">Back Side</h3>
         <IDCardBack 
           data={data} 
-          sealUrl={sealPreview || data.seal} 
+          sealUrl={sealPreview || data.seal}
+          cardId={cardId || data._id}
         />
       </div>
     </div>

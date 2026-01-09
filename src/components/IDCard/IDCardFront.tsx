@@ -10,8 +10,8 @@ interface IDCardFrontProps {
 const IDCardFront = ({ data, photoUrl, signUrl }: IDCardFrontProps) => {
   return (
     <div 
-      className="id-card-scaled bg-card-orange rounded-lg overflow-hidden shadow-xl border-2 border-card-border relative"
-      style={{ aspectRatio: '87/54' }}
+      className="bg-card-orange rounded-lg overflow-hidden shadow-xl border-2 border-card-border relative"
+      style={{ width: '320px', height: '200px' }}
     >
       {/* Vertical ON CONTRACT text - Left side */}
       <div className="absolute left-0 top-0 bottom-0 w-6 bg-card-orange-dark flex items-center justify-center">
@@ -41,9 +41,9 @@ const IDCardFront = ({ data, photoUrl, signUrl }: IDCardFrontProps) => {
           {/* Photo Section */}
           <div className="flex flex-col items-center">
             <div className="w-20 h-24 bg-white border-2 border-card-border rounded overflow-hidden flex items-center justify-center">
-              {photoUrl ? (
+              {photoUrl || data.photo ? (
                 <img 
-                  src={photoUrl} 
+                  src={photoUrl || data.photo} 
                   alt={data.employeeName} 
                   className="w-full h-full object-cover"
                 />
@@ -53,9 +53,9 @@ const IDCardFront = ({ data, photoUrl, signUrl }: IDCardFrontProps) => {
             </div>
             {/* Signature area */}
             <div className="w-20 h-6 mt-1 bg-white border border-card-border rounded flex items-center justify-center overflow-hidden">
-              {signUrl ? (
+              {signUrl || data.sign ? (
                 <img 
-                  src={signUrl} 
+                  src={signUrl || data.sign} 
                   alt="Signature" 
                   className="max-w-full max-h-full object-contain"
                 />

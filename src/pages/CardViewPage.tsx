@@ -1,10 +1,16 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import IDCardPreview from '@/components/IDCard/IDCardPreview';
+import IDCardVertical from '@/components/IDCard/IDCardVertical';
 import { CardDataComplete } from '@/types/card';
 import { cardApi } from '@/lib/api';
 import { toast } from 'sonner';
@@ -12,20 +18,21 @@ import { format } from 'date-fns';
 import { 
   ArrowLeft, 
   Edit, 
-  Download, 
-  User, 
-  Phone, 
-  MapPin, 
-  Calendar,
-  Building,
-  CreditCard,
-  Droplet
+  Download,
+  FileImage,
+  FileText,
+  Loader2
 } from 'lucide-react';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 
 const CardViewPage = () => {
   const { id } = useParams<{ id: string }>();
   const [card, setCard] = useState<CardDataComplete | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isDownloading, setIsDownloading] = useState(false);
+  const cardRef = useRef<HTMLDivElement>(null);
+  const isAuthenticated = !!localStorage.getItem('mega-rail-token');
 
   useEffect(() => {
     const fetchCard = async () => {
@@ -48,7 +55,7 @@ const CardViewPage = () => {
   const formatDate = (dateStr?: string) => {
     if (!dateStr) return '-';
     try {
-      return format(new Date(dateStr), 'dd MMMM yyyy');
+      return format(new Date(dateStr), 'dd/MM/yyyy');
     } catch {
       return dateStr;
     }
@@ -56,19 +63,75 @@ const CardViewPage = () => {
 
   const isExpired = card?.validTill ? new Date(card.validTill) < new Date() : false;
 
+  const generateCanvas = async () => {
+    if (!cardRef.current) return null;
+    
+    return html2canvas(cardRef.current, {
+      scale: 3,
+      useCORS: true,
+      allowTaint: true,
+      backgroundColor: '#ffffff',
+      logging: false,
+    });
+  };
+
+  const downloadAsPNG = async () => {
+    setIsDownloading(true);
+    try {
+      const canvas = await generateCanvas();
+      if (!canvas) throw new Error('Failed to generate canvas');
+
+      const link = document.createElement('a');
+      link.download = `${card?.employeeName || 'ID-Card'}_card.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+      toast.success('Card downloaded as PNG');
+    } catch (error) {
+      toast.error('Failed to download card');
+      console.error(error);
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+
+  const downloadAsPDF = async () => {
+    setIsDownloading(true);
+    try {
+      const canvas = await generateCanvas();
+      if (!canvas) throw new Error('Failed to generate canvas');
+
+      const imgData = canvas.toDataURL('image/png');
+      
+      const cardWidth = 87;
+      const cardHeight = 54 * 2 + 10;
+      
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: [cardWidth + 20, cardHeight + 20],
+      });
+
+      const imgWidth = cardWidth;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      
+      pdf.addImage(imgData, 'PNG', 10, 10, imgWidth, imgHeight);
+      pdf.save(`${card?.employeeName || 'ID-Card'}_card.pdf`);
+      toast.success('Card downloaded as PDF');
+    } catch (error) {
+      toast.error('Failed to download card');
+      console.error(error);
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="container py-8">
         <Skeleton className="h-8 w-48 mb-8" />
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <div className="space-y-4">
-            <Skeleton className="h-64 w-full rounded-lg" />
-            <Skeleton className="h-64 w-full rounded-lg" />
-          </div>
-          <div className="space-y-4">
-            <Skeleton className="h-32 w-full rounded-lg" />
-            <Skeleton className="h-48 w-full rounded-lg" />
-          </div>
+        <div className="max-w-md mx-auto space-y-4">
+          <Skeleton className="h-64 w-full rounded-lg" />
+          <Skeleton className="h-64 w-full rounded-lg" />
         </div>
       </div>
     );
@@ -78,9 +141,9 @@ const CardViewPage = () => {
     return (
       <div className="container py-16 text-center">
         <h1 className="text-2xl font-display font-bold mb-4">Card Not Found</h1>
-        <p className="text-muted-foreground mb-6">The card you're looking for doesn't exist.</p>
-        <Link to="/cards">
-          <Button>Back to Cards</Button>
+        <p className="text-muted-foreground mb-6">The card you are looking for does not exist.</p>
+        <Link to="/">
+          <Button>Back to Home</Button>
         </Link>
       </div>
     );
@@ -88,14 +151,25 @@ const CardViewPage = () => {
 
   return (
     <div className="container py-8">
+      {/* Hidden card for download */}
+      <div className="fixed -left-[9999px] top-0">
+        <IDCardVertical
+          ref={cardRef}
+          data={card}
+          cardId={id}
+        />
+      </div>
+
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
         <div className="flex items-center gap-4">
-          <Link to="/cards">
-            <Button variant="ghost" size="icon">
-              <ArrowLeft className="w-5 h-5" />
-            </Button>
-          </Link>
+          {isAuthenticated && (
+            <Link to="/cards">
+              <Button variant="ghost" size="icon">
+                <ArrowLeft className="w-5 h-5" />
+              </Button>
+            </Link>
+          )}
           <div>
             <div className="flex items-center gap-3">
               <h1 className="text-2xl font-display font-bold text-foreground">
@@ -109,146 +183,91 @@ const CardViewPage = () => {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <Link to={`/edit/${card._id}`}>
-            <Button variant="outline" className="gap-2">
-              <Edit className="w-4 h-4" />
-              Edit Card
-            </Button>
-          </Link>
-          <Button className="gap-2">
-            <Download className="w-4 h-4" />
-            Download
-          </Button>
+          {isAuthenticated && (
+            <Link to={`/edit/${card._id}`}>
+              <Button variant="outline" className="gap-2">
+                <Edit className="w-4 h-4" />
+                Edit Card
+              </Button>
+            </Link>
+          )}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button className="gap-2" disabled={isDownloading}>
+                {isDownloading ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <Download className="w-4 h-4" />
+                )}
+                Download
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={downloadAsPNG} className="gap-2 cursor-pointer">
+                <FileImage className="w-4 h-4" />
+                Download as PNG
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={downloadAsPDF} className="gap-2 cursor-pointer">
+                <FileText className="w-4 h-4" />
+                Download as PDF
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Card Preview */}
-        <div>
-          <h2 className="text-lg font-display font-semibold mb-4">ID Card Preview</h2>
-          <div className="bg-muted/30 rounded-xl p-6 border border-border">
-            <IDCardPreview data={card} />
-          </div>
+      {/* Card Preview - Only showing card details as per PDF requirement */}
+      <div className="max-w-md mx-auto">
+        <div className="bg-muted/30 rounded-xl p-6 border border-border">
+          <IDCardPreview data={card} cardId={id} />
         </div>
 
-        {/* Details */}
-        <div className="space-y-6">
-          {/* Personal Info */}
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-lg font-display flex items-center gap-2">
-                <User className="w-5 h-5 text-primary" />
-                Personal Information
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="grid grid-cols-2 gap-4 text-sm">
-              <div>
-                <p className="text-muted-foreground">Full Name</p>
-                <p className="font-medium">{card.employeeName}</p>
-              </div>
-              <div>
-                <p className="text-muted-foreground">Father's Name</p>
-                <p className="font-medium">{card.fatherName}</p>
-              </div>
-              <div className="flex items-start gap-2">
-                <Droplet className="w-4 h-4 text-destructive mt-0.5" />
-                <div>
-                  <p className="text-muted-foreground">Blood Group</p>
-                  <p className="font-medium">{card.bloodGroup}</p>
-                </div>
-              </div>
-              <div className="flex items-start gap-2">
-                <Phone className="w-4 h-4 text-primary mt-0.5" />
-                <div>
-                  <p className="text-muted-foreground">Mobile</p>
-                  <p className="font-medium">{card.mobileNumber}</p>
-                </div>
-              </div>
-              <div className="col-span-2 flex items-start gap-2">
-                <MapPin className="w-4 h-4 text-muted-foreground mt-0.5" />
-                <div>
-                  <p className="text-muted-foreground">Address</p>
-                  <p className="font-medium">{card.address || '-'}</p>
-                </div>
-              </div>
-              <div className="col-span-2">
-                <p className="text-muted-foreground">Aadhaar Number</p>
-                <p className="font-medium font-mono">{card.adharCardNumber}</p>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Employment Info */}
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-lg font-display flex items-center gap-2">
-                <Building className="w-5 h-5 text-primary" />
-                Employment Details
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="grid grid-cols-2 gap-4 text-sm">
-              <div>
-                <p className="text-muted-foreground">Designation</p>
-                <p className="font-medium">{card.designation}</p>
-              </div>
-              <div>
-                <p className="text-muted-foreground">Division</p>
-                <p className="font-medium">{card.divisionName}</p>
-              </div>
-              <div>
-                <p className="text-muted-foreground">Hirer</p>
-                <p className="font-medium">{card.hirer}</p>
-              </div>
-              <div className="flex items-start gap-2">
-                <CreditCard className="w-4 h-4 text-primary mt-0.5" />
-                <div>
-                  <p className="text-muted-foreground">Card Number</p>
-                  <p className="font-medium">{card.cardNo}</p>
-                </div>
-              </div>
-              <div>
-                <p className="text-muted-foreground">Police Verification</p>
-                <p className="font-medium">{card.policeVerification || '-'}</p>
-              </div>
-              <div>
-                <p className="text-muted-foreground">Profile</p>
-                <p className="font-medium">{card.profileName || '-'}</p>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Validity */}
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-lg font-display flex items-center gap-2">
-                <Calendar className="w-5 h-5 text-primary" />
-                Validity Period
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="grid grid-cols-2 gap-4 text-sm">
-              <div>
-                <p className="text-muted-foreground">Date of Issue</p>
-                <p className="font-medium">{formatDate(card.dateOfIssue)}</p>
-              </div>
-              <div>
-                <p className="text-muted-foreground">Valid Till</p>
-                <p className={`font-medium ${isExpired ? 'text-destructive' : ''}`}>
-                  {formatDate(card.validTill)}
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-
-          {card.description && (
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="text-lg font-display">Notes</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground">{card.description}</p>
-              </CardContent>
-            </Card>
-          )}
+        {/* Essential Details - Only what appears on the card */}
+        <div className="mt-8 space-y-4 text-sm">
+          <div className="grid grid-cols-2 gap-4 p-4 bg-muted/30 rounded-lg border border-border">
+            <div>
+              <p className="text-muted-foreground">Name</p>
+              <p className="font-medium">{card.employeeName}</p>
+            </div>
+            <div>
+              <p className="text-muted-foreground">Father Name</p>
+              <p className="font-medium">{card.fatherName}</p>
+            </div>
+            <div>
+              <p className="text-muted-foreground">Designation</p>
+              <p className="font-medium">{card.designation}</p>
+            </div>
+            <div>
+              <p className="text-muted-foreground">Blood Group</p>
+              <p className="font-medium">{card.bloodGroup}</p>
+            </div>
+            <div>
+              <p className="text-muted-foreground">Mobile Number</p>
+              <p className="font-medium">{card.mobileNumber}</p>
+            </div>
+            <div>
+              <p className="text-muted-foreground">Division</p>
+              <p className="font-medium">{card.divisionName}</p>
+            </div>
+            <div>
+              <p className="text-muted-foreground">Hirer</p>
+              <p className="font-medium">{card.hirer}</p>
+            </div>
+            <div>
+              <p className="text-muted-foreground">Card No</p>
+              <p className="font-medium">{card.cardNo}</p>
+            </div>
+            <div>
+              <p className="text-muted-foreground">Valid From</p>
+              <p className="font-medium">{formatDate(card.dateOfIssue)}</p>
+            </div>
+            <div>
+              <p className="text-muted-foreground">Valid Till</p>
+              <p className={`font-medium ${isExpired ? 'text-destructive' : ''}`}>
+                {formatDate(card.validTill)}
+              </p>
+            </div>
+          </div>
         </div>
       </div>
     </div>

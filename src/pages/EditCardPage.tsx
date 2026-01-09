@@ -1,13 +1,22 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import CardForm from '@/components/CardForm/CardForm';
 import IDCardPreview from '@/components/IDCard/IDCardPreview';
+import IDCardVertical from '@/components/IDCard/IDCardVertical';
 import { CardFormData, CardFiles, CardDataComplete, initialFormData } from '@/types/card';
 import { cardApi } from '@/lib/api';
 import { toast } from 'sonner';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Download, FileImage, FileText, Loader2 } from 'lucide-react';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 
 const EditCardPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -16,6 +25,8 @@ const EditCardPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [previewData, setPreviewData] = useState<CardFormData>(initialFormData);
   const [previews, setPreviews] = useState<{ photo?: string; sign?: string; seal?: string }>({});
+  const [isDownloading, setIsDownloading] = useState(false);
+  const cardRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const fetchCard = async () => {
@@ -84,6 +95,68 @@ const EditCardPage = () => {
     }
   };
 
+  const generateCanvas = async () => {
+    if (!cardRef.current) return null;
+    
+    return html2canvas(cardRef.current, {
+      scale: 3,
+      useCORS: true,
+      allowTaint: true,
+      backgroundColor: '#ffffff',
+      logging: false,
+    });
+  };
+
+  const downloadAsPNG = async () => {
+    setIsDownloading(true);
+    try {
+      const canvas = await generateCanvas();
+      if (!canvas) throw new Error('Failed to generate canvas');
+
+      const link = document.createElement('a');
+      link.download = `${previewData.employeeName || 'ID-Card'}_card.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+      toast.success('Card downloaded as PNG');
+    } catch (error) {
+      toast.error('Failed to download card');
+      console.error(error);
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+
+  const downloadAsPDF = async () => {
+    setIsDownloading(true);
+    try {
+      const canvas = await generateCanvas();
+      if (!canvas) throw new Error('Failed to generate canvas');
+
+      const imgData = canvas.toDataURL('image/png');
+      
+      const cardWidth = 87;
+      const cardHeight = 54 * 2 + 10;
+      
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: [cardWidth + 20, cardHeight + 20],
+      });
+
+      const imgWidth = cardWidth;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      
+      pdf.addImage(imgData, 'PNG', 10, 10, imgWidth, imgHeight);
+      pdf.save(`${previewData.employeeName || 'ID-Card'}_card.pdf`);
+      toast.success('Card downloaded as PDF');
+    } catch (error) {
+      toast.error('Failed to download card');
+      console.error(error);
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="container py-8">
@@ -106,7 +179,7 @@ const EditCardPage = () => {
     return (
       <div className="container py-16 text-center">
         <h1 className="text-2xl font-display font-bold mb-4">Card Not Found</h1>
-        <p className="text-muted-foreground mb-6">The card you're looking for doesn't exist.</p>
+        <p className="text-muted-foreground mb-6">The card you are looking for does not exist.</p>
         <Link to="/cards">
           <Button>Back to Cards</Button>
         </Link>
@@ -116,17 +189,53 @@ const EditCardPage = () => {
 
   return (
     <div className="container py-8">
+      {/* Hidden card for download */}
+      <div className="fixed -left-[9999px] top-0">
+        <IDCardVertical
+          ref={cardRef}
+          data={{ ...previewData, photo: card.photo, sign: card.sign, seal: card.seal } as any}
+          photoUrl={previews.photo || card.photo}
+          signUrl={previews.sign || card.sign}
+          sealUrl={previews.seal || card.seal}
+          cardId={id}
+        />
+      </div>
+
       {/* Header */}
-      <div className="flex items-center gap-4 mb-8">
-        <Link to={`/card/${id}`}>
-          <Button variant="ghost" size="icon">
-            <ArrowLeft className="w-5 h-5" />
-          </Button>
-        </Link>
-        <div>
-          <h1 className="text-3xl font-display font-bold text-foreground">Edit Card</h1>
-          <p className="text-muted-foreground mt-1">Update details for {card.employeeName}</p>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+        <div className="flex items-center gap-4">
+          <Link to={`/card/${id}`}>
+            <Button variant="ghost" size="icon">
+              <ArrowLeft className="w-5 h-5" />
+            </Button>
+          </Link>
+          <div>
+            <h1 className="text-3xl font-display font-bold text-foreground">Edit Card</h1>
+            <p className="text-muted-foreground mt-1">Update details for {card.employeeName}</p>
+          </div>
         </div>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" className="gap-2" disabled={isDownloading}>
+              {isDownloading ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <Download className="w-4 h-4" />
+              )}
+              Download
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={downloadAsPNG} className="gap-2 cursor-pointer">
+              <FileImage className="w-4 h-4" />
+              Download as PNG
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={downloadAsPDF} className="gap-2 cursor-pointer">
+              <FileText className="w-4 h-4" />
+              Download as PDF
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -146,10 +255,11 @@ const EditCardPage = () => {
             <h2 className="text-lg font-display font-semibold text-foreground mb-4">Live Preview</h2>
             <div className="bg-muted/30 rounded-xl p-6 border border-border">
               <IDCardPreview 
-                data={{ ...previewData, photo: card.photo, sign: card.sign, seal: card.seal }}
+                data={{ ...previewData, photo: card.photo, sign: card.sign, seal: card.seal } as any}
                 photoPreview={previews.photo}
                 signPreview={previews.sign}
                 sealPreview={previews.seal}
+                cardId={id}
               />
             </div>
           </div>
