@@ -101,8 +101,8 @@ export const cardApi = {
 
 // Auth API functions
 export const authApi = {
-  login: async (email: string, password: string) => {
-    const response = await api.post('/auth/login', { email, password });
+  login: async (username: string, password: string) => {
+    const response = await api.post('/auth/login', { username, password });
     if (response.data.access_token) {
       localStorage.setItem('mega-rail-token', response.data.access_token);
     }
