@@ -19,7 +19,7 @@ import CardsListPage from "./pages/CardsListPage";
 import CardViewPage from "./pages/CardViewPage";
 import EditCardPage from "./pages/EditCardPage";
 import NotFound from "./pages/NotFound";
-import VerifyCardPage from "./pages/VeryCardPage"; // ✅ NEW PAGE
+import VerifyCardPage from "./pages/VeryCardPage";
 import { authApi } from "./lib/api";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
