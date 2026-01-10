@@ -1,98 +1,97 @@
-import { CardDataComplete } from '@/types/card';
-import { QRCodeSVG } from 'qrcode.react';
-import { format } from 'date-fns';
+import { CardDataComplete } from "@/types/card";
+import { QRCodeSVG } from "qrcode.react";
+import { format } from "date-fns";
 
 interface IDCardBackProps {
   data: CardDataComplete;
-  sealUrl?: string;
   cardId?: string;
 }
 
-const IDCardBack = ({ data, sealUrl, cardId }: IDCardBackProps) => {
-  // QR data points to card view page
+const IDCardBack = ({ data, cardId }: IDCardBackProps) => {
   const baseUrl = window.location.origin;
-  const qrData = `${baseUrl}/card/${cardId || data._id || ''}`;
+  const qrData = `https://megarailpowerproject.vercel.app/card/${
+    cardId || data._id || ""
+  }`;
 
-  const formatDate = (dateStr: string) => {
-    if (!dateStr) return '';
+  const formatDate = (dateStr?: string) => {
+    if (!dateStr) return "";
     try {
-      return format(new Date(dateStr), 'dd/MM/yyyy');
+      return format(new Date(dateStr), "dd/MM/yyyy");
     } catch {
       return dateStr;
     }
   };
 
   return (
-    <div 
-      className="bg-card-orange rounded-lg overflow-hidden shadow-xl border-2 border-card-border relative"
-      style={{ width: '320px', height: '200px' }}
+    <div
+      className="bg-card-orange rounded-lg overflow-hidden border-2 border-card-border relative"
+      style={{ width: "54mm", height: "87mm" }}
     >
-      {/* Vertical ON CONTRACT text - Left side */}
-      <div className="absolute left-0 top-0 bottom-0 w-6 bg-card-orange-dark flex items-center justify-center">
-        <span 
-          className="text-white font-bold text-[10px] tracking-wider"
-          style={{ 
-            writingMode: 'vertical-rl', 
-            textOrientation: 'mixed',
-            transform: 'rotate(180deg)',
-            letterSpacing: '2px'
+      {/* ON CONTRACT STRIP */}
+      <div className="absolute left-0 top-0 bottom-0 w-8 bg-card-orange-dark flex items-center justify-center">
+        <span
+          className="text-black font-extrabold text-[18px] tracking-widest"
+          style={{
+            writingMode: "vertical-lr",
+            textOrientation: "upright",
+            letterSpacing: "2px",
           }}
         >
           ON CONTRACT
         </span>
       </div>
 
-      {/* Main content area */}
-      <div className="ml-6 h-full flex flex-col p-3">
-        {/* Top row - QR and Blood Group */}
-        <div className="flex items-start justify-between mb-2">
-          <div className="bg-white p-1 rounded">
-            <QRCodeSVG value={qrData} size={45} level="L" />
+      {/* MAIN CONTENT */}
+      <div className="ml-8 h-full flex flex-col px-2 py-2 text-card-text font-card">
+        {/* TOP ROW — QR & BLOOD (PDF SIZE MATCH) */}
+        <div className="flex justify-between gap-1 items-center mb-2">
+          {/* QR CODE — LARGE */}
+          <div className="w-[20mm] h-[20mm] border border-card-border p-0.25 flex items-center justify-center">
+            <QRCodeSVG value={qrData} size={72} level="L" />
           </div>
-          <div className="bg-white px-3 py-1 rounded border border-card-border">
-            <span className="text-xl font-bold text-card-text font-card">
-              {data.bloodGroup || 'B+'}
-            </span>
+
+          {/* BLOOD GROUP — SAME SIZE */}
+          <div className="w-[20mm] h-[20mm] border border-card-border flex items-center justify-center font-extrabold text-[30px]">
+            {data.bloodGroup || "B+"}
           </div>
         </div>
 
-        {/* Division Name */}
-        <div className="bg-white px-2 py-0.5 rounded border border-card-border text-center mb-1">
-          <span className="text-sm font-bold text-card-text font-card">
-            {data.divisionName || 'NWR BKN'}
-          </span>
+        {/* DIVISION / DEPARTMENT */}
+        <div className="border border-card-border text-center text-[16px] font-extrabold py-2 mb-2">
+          {data.divisionName || "NWR BKN"}
         </div>
 
-        {/* Phone Number */}
-        <div className="text-center mb-1">
-          <span className="text-lg font-bold text-card-text font-card">
-            {data.mobileNumber || '9999999999'}
-          </span>
+        {/* MOBILE NUMBER */}
+        <div className="text-center text-[18px] font-extrabold mb-2">
+          {data.mobileNumber || "9999999999"}
         </div>
 
-        {/* Hirer and Validity */}
-        <div className="text-[8px] text-card-text font-card space-y-0.5">
-          <p>
-            <span className="font-semibold">{data.hirer || 'Company Name'}</span>
-          </p>
-          <p>
-            <span className="font-semibold">Validity of Contract:</span>
-          </p>
+        {/* COMPANY NAME */}
+        <div className=" text-[9px] font-semibold mb-1">
+          {data.profileName || "Company Name"}
+        </div>
+
+        {/* VALIDITY */}
+        <div className="text-[8px] leading-tight mb-1">
+          <p className="font-semibold">Validity of Contract:</p>
           <p>
             From {formatDate(data.dateOfIssue)} To {formatDate(data.validTill)}
           </p>
         </div>
 
-        {/* Date of Issue and Validity */}
-        <div className="text-[8px] text-card-text font-card border-t border-card-border pt-1 mt-1">
-          <p><span className="font-semibold">Date of Issue</span></p>
+        {/* ISSUE INFO */}
+        <div className="text-[8px] leading-tight border-t border-card-border pt-1 mb-auto">
+          <p className="font-semibold">Date of Issue</p>
           <p>Validity: 01 year from the date of issue</p>
         </div>
 
-        {/* Instruction */}
-        <div className="text-[6px] text-card-text font-card border-t border-card-border pt-1 mt-auto">
-          <p className="font-semibold">Instruction</p>
-          <p>Please surrender to issuing authority on completion of contractual services</p>
+        {/* INSTRUCTION — BOTTOM */}
+        <div className="text-[7px] leading-tight border-t border-card-border pt-1 text-center">
+          <p className="font-bold">Instruction</p>
+          <p>
+            Please surrender to issuing authority on completion of contractual
+            services
+          </p>
         </div>
       </div>
     </div>
