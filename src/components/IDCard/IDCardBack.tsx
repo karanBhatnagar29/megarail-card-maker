@@ -9,9 +9,7 @@ interface IDCardBackProps {
 
 const IDCardBack = ({ data, cardId }: IDCardBackProps) => {
   const baseUrl = window.location.origin;
-  const qrData = `https://megarailpowerproject.vercel.app/card/${
-    cardId || data._id || ""
-  }`;
+  const qrData = `https://megarail.vercel.app/card/${cardId || data._id || ""}`;
 
   const formatDate = (dateStr?: string) => {
     if (!dateStr) return "";
