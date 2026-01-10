@@ -1,6 +1,13 @@
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Train, Plus, Search, LogIn, LogOut } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Train, Plus, Search, LogIn, LogOut, User, KeyRound } from 'lucide-react';
 import { authApi } from '@/lib/api';
 import { cn } from '@/lib/utils';
 
@@ -54,19 +61,38 @@ const Header = ({ isAuthenticated, onAuthChange }: HeaderProps) => {
                     isActive('/create') && "bg-primary text-primary-foreground"
                   )}
                 >
-                  <Plus className="w-4 h-4" />
+                <Plus className="w-4 h-4" />
                   <span className="hidden sm:inline">New Card</span>
                 </Button>
               </Link>
-              <Button 
-                variant="ghost" 
-                size="sm"
-                onClick={handleLogout}
-                className="gap-2 text-muted-foreground hover:text-foreground"
-              >
-                <LogOut className="w-4 h-4" />
-                <span className="hidden sm:inline">Logout</span>
-              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button 
+                    variant="ghost" 
+                    size="sm"
+                    className="gap-2"
+                  >
+                    <User className="w-4 h-4" />
+                    <span className="hidden sm:inline">Account</span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <Link to="/reset-password">
+                    <DropdownMenuItem className="cursor-pointer gap-2">
+                      <KeyRound className="w-4 h-4" />
+                      Reset Password
+                    </DropdownMenuItem>
+                  </Link>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem 
+                    className="cursor-pointer gap-2 text-destructive focus:text-destructive"
+                    onClick={handleLogout}
+                  >
+                    <LogOut className="w-4 h-4" />
+                    Logout
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </>
           ) : (
             <Link to="/login">
