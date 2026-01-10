@@ -64,6 +64,21 @@ const VerifyCardPage = () => {
     ? new Date(card.validTill) < new Date()
     : false;
 
+  // ✅ Your sequence remains same
+  const fields: Array<{ label: string; value: any }> = [
+    { label: "Name", value: card.employeeName },
+    { label: "Aadhaar No.", value: card.adharCardNumber },
+    { label: "Address", value: card.address },
+    { label: "Date of Issue", value: formatDate(card.dateOfIssue) },
+    { label: "Valid Till", value: formatDate(card.validTill) },
+    { label: "Police Verification", value: card.policeVerification },
+    { label: "Agency Name", value: card.profileName },
+    {
+      label: "Issuing Authority",
+      value: `${card.divisionName || "-"}\n${card.hirer || "-"}`,
+    },
+  ];
+
   return (
     <div className="min-h-screen bg-white flex items-center justify-center px-4 py-10">
       <div className="w-full max-w-xl">
@@ -77,65 +92,22 @@ const VerifyCardPage = () => {
           </Badge>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-5 rounded-xl border border-border bg-muted/30">
-          <div>
-            <p className="text-muted-foreground text-xs">Name</p>
-            <p className="font-semibold">{card.employeeName}</p>
-          </div>
-
-          <div>
-            <p className="text-muted-foreground text-xs">Employee ID</p>
-            <p className="font-semibold">{card.cardNo}</p>
-          </div>
-
-          <div>
-            <p className="text-muted-foreground text-xs">Designation</p>
-            <p className="font-semibold">{card.designation}</p>
-          </div>
-
-          <div>
-            <p className="text-muted-foreground text-xs">Blood Group</p>
-            <p className="font-semibold">{card.bloodGroup}</p>
-          </div>
-
-          <div>
-            <p className="text-muted-foreground text-xs">Mobile Number</p>
-            <p className="font-semibold">{card.mobileNumber}</p>
-          </div>
-
-          <div>
-            <p className="text-muted-foreground text-xs">Aadhaar No.</p>
-            <p className="font-semibold">{card.adharCardNumber}</p>
-          </div>
-
-          <div>
-            <p className="text-muted-foreground text-xs">Division</p>
-            <p className="font-semibold">{card.divisionName}</p>
-          </div>
-
-          <div>
-            <p className="text-muted-foreground text-xs">Hirer</p>
-            <p className="font-semibold">{card.hirer}</p>
-          </div>
-
-          <div>
-            <p className="text-muted-foreground text-xs">Date of Issue</p>
-            <p className="font-semibold">{formatDate(card.dateOfIssue)}</p>
-          </div>
-
-          <div>
-            <p className="text-muted-foreground text-xs">Valid Till</p>
-            <p
-              className={`font-semibold ${isExpired ? "text-destructive" : ""}`}
-            >
-              {formatDate(card.validTill)}
-            </p>
-          </div>
-
-          <div className="sm:col-span-2">
-            <p className="text-muted-foreground text-xs">Address</p>
-            <p className="font-semibold">{card.address}</p>
-          </div>
+        {/* ✅ STACK LAYOUT */}
+        <div className="flex flex-col gap-4 p-5 rounded-xl border border-border bg-muted/30">
+          {fields.map((item, index) => (
+            <div key={index}>
+              <p className="text-muted-foreground text-xs">{item.label}</p>
+              <p
+                className={`font-semibold whitespace-pre-line ${
+                  item.label === "Valid Till" && isExpired
+                    ? "text-destructive"
+                    : ""
+                }`}
+              >
+                {item.value || "-"}
+              </p>
+            </div>
+          ))}
         </div>
 
         <p className="text-center text-xs text-muted-foreground mt-6">

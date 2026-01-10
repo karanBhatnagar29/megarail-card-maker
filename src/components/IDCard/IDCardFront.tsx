@@ -4,8 +4,8 @@ import { User } from "lucide-react";
 interface IDCardFrontProps {
   data: CardDataComplete;
   photoUrl?: string;
-  signUrl?:string;
-  sealUrl?:string
+  signUrl?: string;
+  sealUrl?: string;
 }
 
 const IDCardFront = ({ data, photoUrl }: IDCardFrontProps) => {
@@ -36,11 +36,12 @@ const IDCardFront = ({ data, photoUrl }: IDCardFrontProps) => {
           <p className="text-[10px] font-bold">
             {data.profileName || "Company Name"}
           </p>
+          <p className="text-[10px] font-bold">{data.cardNo || "ID"}</p>
         </div>
 
         {/* BIG PHOTO (dominant like PDF) */}
         {/* PERFECT SQUARE PHOTO */}
-        <div className="flex justify-center mb-2 mt-5">
+        <div className="flex justify-center mb-2 mt-1 ">
           <div className="w-[150px] h-[150px] bg-white border-2 border-card-border overflow-hidden">
             {photoUrl || data.photo ? (
               <img
@@ -67,8 +68,8 @@ const IDCardFront = ({ data, photoUrl }: IDCardFrontProps) => {
         </div>
 
         {/* Bottom Right Signature Text */}
-        <div className="text-right font-bold text-[8px] leading-tight">
-          <p>(Signature)</p>
+        <div className="absolute bottom-2 right-2 text-right font-bold text-[8px] leading-tight">
+          <p>{data.hirer}</p>
           <p>Designation of Issuing Authority</p>
         </div>
       </div>

@@ -254,7 +254,7 @@ const CardForm = ({
               required
             />
           </div>
-            <div className="space-y-2">
+          <div className="space-y-2">
             <Label>Issuing Authority Name</Label>
             <Input
               name="divisionName"
@@ -317,7 +317,7 @@ const CardForm = ({
       <Card>
         <CardHeader className="pb-4">
           <CardTitle className="text-lg font-display">
-            Validity Period
+            Validity Contract
           </CardTitle>
         </CardHeader>
         <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -344,6 +344,34 @@ const CardForm = ({
           </div>
         </CardContent>
       </Card>
+      <Card>
+        <CardHeader className="pb-4">
+          <CardTitle className="text-lg font-display">Card Validity</CardTitle>
+        </CardHeader>
+        <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label>Card Date of Issue *</Label>
+            <Input
+              type="date"
+              name="contractValidityDate"
+              value={formData.contractValidityDate}
+              onChange={handleInputChange}
+              required
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label>Card Valid Till *</Label>
+            <Input
+              type="date"
+              name="contractExpiryDate"
+              value={formData.contractExpiryDate}
+              onChange={handleInputChange}
+              required
+            />
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Uploads */}
       <Card>
@@ -354,8 +382,8 @@ const CardForm = ({
         </CardHeader>
         <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <FileUploadButton type="photo" label="Photo" icon={User} />
-          <FileUploadButton type="sign" label="Signature" icon={PenTool} />
-          <FileUploadButton type="seal" label="Seal" icon={Stamp} />
+          {/* <FileUploadButton type="sign" label="Signature" icon={PenTool} />
+          <FileUploadButton type="seal" label="Seal" icon={Stamp} /> */}
         </CardContent>
       </Card>
 

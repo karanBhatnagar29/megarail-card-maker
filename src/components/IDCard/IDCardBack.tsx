@@ -76,7 +76,7 @@ const IDCardBack = ({ data, cardId }: IDCardBackProps) => {
         <div className="text-[8px] leading-tight mb-1">
           <p className="font-semibold">Validity of Contract:</p>
           <p>
-            From {formatDate(data.dateOfIssue)} To {formatDate(data.validTill)}
+            From {formatDate(data.contractValidityDate)} To {formatDate(data.contractExpiryDate)}
           </p>
         </div>
 

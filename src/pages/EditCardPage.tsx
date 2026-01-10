@@ -52,6 +52,8 @@ const EditCardPage = () => {
           divisionName: data.divisionName || '',
           profileName: data.profileName || '',
           description: data.description || '',
+          contractValidityDate: data.contractValidityDate ? data.contractValidityDate.split('T')[0] : '',
+          contractExpiryDate: data.contractExpiryDate ? data.contractExpiryDate.split('T')[0] : '',
         });
       } catch (error) {
         toast.error('Failed to load card');

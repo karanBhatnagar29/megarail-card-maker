@@ -1,12 +1,18 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { authApi } from '@/lib/api';
-import { toast } from 'sonner';
-import { Train, LogIn, Eye, EyeOff } from 'lucide-react';
+import { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { authApi } from "@/lib/api";
+import { toast } from "sonner";
+import { Train, LogIn, Eye, EyeOff } from "lucide-react";
 
 interface LoginPageProps {
   onLogin: () => void;
@@ -14,8 +20,8 @@ interface LoginPageProps {
 
 const LoginPage = ({ onLogin }: LoginPageProps) => {
   const navigate = useNavigate();
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -25,11 +31,14 @@ const LoginPage = ({ onLogin }: LoginPageProps) => {
 
     try {
       await authApi.login(username, password);
-      toast.success('Login successful!');
+      toast.success("Login successful!");
       onLogin();
-      navigate('/cards');
+      navigate("/cards");
     } catch (error: any) {
-      toast.error(error.response?.data?.message || 'Login failed. Please check your credentials.');
+      toast.error(
+        error.response?.data?.message ||
+          "Login failed. Please check your credentials."
+      );
     } finally {
       setIsLoading(false);
     }
@@ -43,7 +52,9 @@ const LoginPage = ({ onLogin }: LoginPageProps) => {
             <Train className="w-9 h-9 text-white" />
           </div>
           <CardTitle className="text-2xl font-display">Welcome Back</CardTitle>
-          <CardDescription>Sign in to access the Mega-Rail Card Generator</CardDescription>
+          <CardDescription>
+            Sign in to access the Mega-Rail Card Generator
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -64,7 +75,7 @@ const LoginPage = ({ onLogin }: LoginPageProps) => {
               <div className="relative">
                 <Input
                   id="password"
-                  type={showPassword ? 'text' : 'password'}
+                  type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Enter your password"
@@ -86,9 +97,17 @@ const LoginPage = ({ onLogin }: LoginPageProps) => {
                 </Button>
               </div>
             </div>
+            <div className="flex justify-end">
+              <Link
+                to="/forgot-password"
+                className="text-sm text-primary hover:underline"
+              >
+                Forgot Password?
+              </Link>
+            </div>
             <Button type="submit" className="w-full gap-2" disabled={isLoading}>
               {isLoading ? (
-                'Signing in...'
+                "Signing in..."
               ) : (
                 <>
                   <LogIn className="w-4 h-4" />

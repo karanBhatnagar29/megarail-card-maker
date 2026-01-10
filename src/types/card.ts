@@ -13,10 +13,11 @@ export type CardFormData = {
 
   adharCardNumber: string;
   validTill: string;
-
+  description?: string;
   mobileNumber: string;
   address: string;
-
+  contractValidityDate?: string;
+  contractExpiryDate?: string;
   bloodGroup: string;
   policeVerification?: string;
 };
@@ -89,4 +90,6 @@ export const initialFormData: CardFormData = {
 
   bloodGroup: "O+",
   policeVerification: "",
+  contractValidityDate: "",
+  contractExpiryDate: "",
 };

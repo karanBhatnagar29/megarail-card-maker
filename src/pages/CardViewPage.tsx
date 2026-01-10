@@ -234,67 +234,72 @@ const CardViewPage = () => {
           ref={cardRef}
           className="flex flex-col items-center gap-6 bg-white py-8 px-4"
         >
-          <IDCardFront data={card} photoUrl={card.photo} signUrl={card.sign} sealUrl={card.seal} />
+          <IDCardFront
+            data={card}
+            photoUrl={card.photo}
+            signUrl={card.sign}
+            sealUrl={card.seal}
+          />
           <IDCardBack data={card} cardId={id} />
         </div>
 
         {/* Essential Details - Only what appears on the card */}
+        {/* Essential Details - Only what appears on the card */}
         <div className="mt-8 space-y-4 text-sm">
           <div className="grid grid-cols-2 gap-4 p-4 bg-muted/30 rounded-lg border border-border">
+            {/* 1️⃣ Name */}
             <div>
               <p className="text-muted-foreground">Name</p>
               <p className="text-[18px]">{card.employeeName}</p>
             </div>
+
+            {/* 2️⃣ Aadhaar */}
+            <div>
+              <p className="text-muted-foreground">Aadhaar No.</p>
+              <p className="font-medium">{card.adharCardNumber}</p>
+            </div>
+
+            {/* 3️⃣ Address */}
             <div>
               <p className="text-muted-foreground">Address</p>
               <p className="font-medium">{card.address}</p>
             </div>
-            <div>
-              <p className="text-muted-foreground">Adhar no.</p>
-              <p className="font-medium">{card.adharCardNumber}</p>
-            </div>
-            <div>
-              <p className="text-muted-foreground">Designation</p>
-              <p className="font-medium">{card.designation}</p>
-            </div>
-            <div>
-              <p className="text-muted-foreground">Blood Group</p>
-              <p className="font-medium">{card.bloodGroup}</p>
-            </div>
-            <div>
-              <p className="text-muted-foreground">Mobile Number</p>
-              <p className="font-medium">{card.mobileNumber}</p>
-            </div>
-            <div>
-              <p className="text-muted-foreground">Division</p>
-              <p className="font-medium">{card.divisionName}</p>
-            </div>
-            <div>
-              <p className="text-muted-foreground">Hirer</p>
-              <p className="font-medium">{card.hirer}</p>
-            </div>
-            <div>
-              <p className="text-muted-foreground">Card No</p>
-              <p className="font-medium">{card.cardNo}</p>
-            </div>
+
+            {/* 4️⃣ Date of Issue */}
             <div>
               <p className="text-muted-foreground">Date of Issue</p>
               <p className="font-medium">{formatDate(card.dateOfIssue)}</p>
             </div>
+
+            {/* 5️⃣ Valid Till */}
             <div>
-              <p className="text-muted-foreground">Validity upto</p>
+              <p className="text-muted-foreground">Valid Till</p>
               <p
                 className={`font-medium ${isExpired ? "text-destructive" : ""}`}
               >
                 {formatDate(card.validTill)}
               </p>
             </div>
+
+            {/* 6️⃣ Police Verification */}
             <div>
-              <p className="text-muted-foreground">
-                Name and Designation of Issuing Authority
-              </p>
-              <p className="font-medium">
-                {card.divisionName}, {card.hirer}
+              <p className="text-muted-foreground">Police Verification</p>
+              <p className="font-medium">{card.policeVerification}</p>
+            </div>
+
+            {/* 7️⃣ Agency Name */}
+            <div>
+              <p className="text-muted-foreground">Agency Name</p>
+              <p className="font-medium">{card.profileName}</p>
+            </div>
+
+            {/* 8️⃣ Issuing Authority (Division + Hirer) */}
+            <div>
+              <p className="text-muted-foreground">Issuing Authority</p>
+              <p className="font-medium whitespace-pre-line">
+                {card.divisionName || "-"}
+                {"\n"}
+                {card.hirer || "-"}
               </p>
             </div>
           </div>

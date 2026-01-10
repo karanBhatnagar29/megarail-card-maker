@@ -37,6 +37,8 @@ export interface CardData {
   sign?: string;
   createdAt?: string;
   updatedAt?: string;
+  contractValidityDate?: string;
+  contractExpiryDate?: string;
 }
 
 export interface CreateCardPayload {
@@ -115,6 +117,30 @@ export const authApi = {
 
   isAuthenticated: () => {
     return !!localStorage.getItem('mega-rail-token');
+  },
+
+  // Reset password for logged-in user
+  resetPassword: async (newPassword: string, confirmPassword: string) => {
+    const response = await api.post('/auth/reset-password', { newPassword, confirmPassword });
+    return response.data;
+  },
+
+  // Forgot password - Send OTP
+  sendOtp: async (email: string) => {
+    const response = await api.post('/auth/send-otp', { email });
+    return response.data;
+  },
+
+  // Verify OTP
+  verifyOtp: async (email: string, otp: string) => {
+    const response = await api.post('/auth/verify-otp', { email, otp });
+    return response.data;
+  },
+
+  // Reset password with OTP
+  resetPasswordWithOtp: async (email: string, otp: string, newPassword: string, confirmPassword: string) => {
+    const response = await api.post('/auth/reset-password-otp', { email, otp, newPassword, confirmPassword });
+    return response.data;
   },
 };
 
