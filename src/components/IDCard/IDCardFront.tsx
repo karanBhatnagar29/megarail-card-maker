@@ -4,6 +4,8 @@ import { User } from "lucide-react";
 interface IDCardFrontProps {
   data: CardDataComplete;
   photoUrl?: string;
+  signUrl?:string;
+  sealUrl?:string
 }
 
 const IDCardFront = ({ data, photoUrl }: IDCardFrontProps) => {

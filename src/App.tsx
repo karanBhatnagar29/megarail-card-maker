@@ -1,9 +1,16 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  Navigate,
+  useLocation,
+} from "react-router-dom";
+
 import Header from "./components/Layout/Header";
 import LandingPage from "./pages/LandingPage";
 import LoginPage from "./pages/LoginPage";
@@ -12,26 +19,107 @@ import CardsListPage from "./pages/CardsListPage";
 import CardViewPage from "./pages/CardViewPage";
 import EditCardPage from "./pages/EditCardPage";
 import NotFound from "./pages/NotFound";
+import VerifyCardPage from "./pages/VeryCardPage"; // ✅ NEW PAGE
 import { authApi } from "./lib/api";
 
 const queryClient = new QueryClient();
 
-const ProtectedRoute = ({ children, isAuthenticated }: { children: React.ReactNode; isAuthenticated: boolean }) => {
+const ProtectedRoute = ({
+  children,
+  isAuthenticated,
+}: {
+  children: React.ReactNode;
+  isAuthenticated: boolean;
+}) => {
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
   }
   return <>{children}</>;
 };
 
+// ✅ wrapper to decide when to show header
+const AppLayout = ({
+  isAuthenticated,
+  handleAuthChange,
+}: {
+  isAuthenticated: boolean;
+  handleAuthChange: () => void;
+}) => {
+  const location = useLocation();
+
+  // ✅ hide header for verify route
+  const hideHeader = location.pathname.startsWith("/verify/");
+
+  return (
+    <div className="min-h-screen bg-background">
+      {!hideHeader && (
+        <Header
+          isAuthenticated={isAuthenticated}
+          onAuthChange={handleAuthChange}
+        />
+      )}
+
+      <Routes>
+        {/* Public Routes */}
+        <Route
+          path="/"
+          element={<LandingPage isAuthenticated={isAuthenticated} />}
+        />
+        <Route
+          path="/login"
+          element={<LoginPage onLogin={handleAuthChange} />}
+        />
+
+        {/* ✅ PUBLIC QR VERIFY PAGE (no header) */}
+        <Route path="/verify/:id" element={<VerifyCardPage />} />
+
+        {/* Protected Routes */}
+        <Route
+          path="/create"
+          element={
+            <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <CreateCardPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/cards"
+          element={
+            <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <CardsListPage />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* ✅ Card view (admin/staff page - header visible) */}
+        <Route path="/card/:id" element={<CardViewPage />} />
+
+        <Route
+          path="/edit/:id"
+          element={
+            <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <EditCardPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </div>
+  );
+};
+
 const App = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(authApi.isAuthenticated());
+  const [isAuthenticated, setIsAuthenticated] = useState(
+    authApi.isAuthenticated()
+  );
 
   const handleAuthChange = () => {
     setIsAuthenticated(authApi.isAuthenticated());
   };
 
   useEffect(() => {
-    // Check auth status on mount
     setIsAuthenticated(authApi.isAuthenticated());
   }, []);
 
@@ -41,39 +129,10 @@ const App = () => {
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <div className="min-h-screen bg-background">
-            <Header isAuthenticated={isAuthenticated} onAuthChange={handleAuthChange} />
-            <Routes>
-              <Route path="/" element={<LandingPage isAuthenticated={isAuthenticated} />} />
-              <Route path="/login" element={<LoginPage onLogin={handleAuthChange} />} />
-              <Route 
-                path="/create" 
-                element={
-                  <ProtectedRoute isAuthenticated={isAuthenticated}>
-                    <CreateCardPage />
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/cards" 
-                element={
-                  <ProtectedRoute isAuthenticated={isAuthenticated}>
-                    <CardsListPage />
-                  </ProtectedRoute>
-                } 
-              />
-              <Route path="/card/:id" element={<CardViewPage />} />
-              <Route 
-                path="/edit/:id" 
-                element={
-                  <ProtectedRoute isAuthenticated={isAuthenticated}>
-                    <EditCardPage />
-                  </ProtectedRoute>
-                } 
-              />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </div>
+          <AppLayout
+            isAuthenticated={isAuthenticated}
+            handleAuthChange={handleAuthChange}
+          />
         </BrowserRouter>
       </TooltipProvider>
     </QueryClientProvider>

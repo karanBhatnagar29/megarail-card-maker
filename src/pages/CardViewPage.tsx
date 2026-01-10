@@ -234,7 +234,7 @@ const CardViewPage = () => {
           ref={cardRef}
           className="flex flex-col items-center gap-6 bg-white py-8 px-4"
         >
-          <IDCardFront data={card} photoUrl={card.photo} />
+          <IDCardFront data={card} photoUrl={card.photo} signUrl={card.sign} sealUrl={card.seal} />
           <IDCardBack data={card} cardId={id} />
         </div>
 
