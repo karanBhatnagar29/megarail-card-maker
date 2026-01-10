@@ -36,7 +36,9 @@ const IDCardFront = ({ data, photoUrl }: IDCardFrontProps) => {
           <p className="text-[10px] font-bold">
             {data.profileName || "Company Name"}
           </p>
-          <p className="text-[10px] font-bold">{data.cardNo || "ID"}</p>
+          <p className="text-[10px] font-bold">
+            ID CARD No. {data.cardNo || "ID"}
+          </p>
         </div>
 
         {/* BIG PHOTO (dominant like PDF) */}
