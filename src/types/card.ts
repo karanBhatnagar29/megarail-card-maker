@@ -19,6 +19,7 @@ export type CardFormData = {
 
   bloodGroup: string;
   policeVerification?: string;
+  description?: string;
 };
 
 export interface CardFiles {

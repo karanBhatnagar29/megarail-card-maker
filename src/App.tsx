@@ -18,8 +18,10 @@ import CreateCardPage from "./pages/CreateCardPage";
 import CardsListPage from "./pages/CardsListPage";
 import CardViewPage from "./pages/CardViewPage";
 import EditCardPage from "./pages/EditCardPage";
+import ResetPasswordPage from "./pages/ResetPasswordPage";
+import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import NotFound from "./pages/NotFound";
-import VerifyCardPage from "./pages/VeryCardPage"; // ✅ NEW PAGE
+import VerifyCardPage from "./pages/VeryCardPage";
 import { authApi } from "./lib/api";
 
 const queryClient = new QueryClient();
@@ -69,6 +71,7 @@ const AppLayout = ({
           path="/login"
           element={<LoginPage onLogin={handleAuthChange} />}
         />
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
 
         {/* ✅ PUBLIC QR VERIFY PAGE (no header) */}
         <Route path="/verify/:id" element={<VerifyCardPage />} />
@@ -100,6 +103,15 @@ const AppLayout = ({
           element={
             <ProtectedRoute isAuthenticated={isAuthenticated}>
               <EditCardPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/reset-password"
+          element={
+            <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <ResetPasswordPage />
             </ProtectedRoute>
           }
         />
