@@ -5,7 +5,7 @@ import { format } from "date-fns";
 interface IDCardBackProps {
   data: CardDataComplete;
   cardId?: string;
-  sealUrl?:string
+  sealUrl?: string;
 }
 
 const IDCardBack = ({ data, cardId }: IDCardBackProps) => {
@@ -59,7 +59,7 @@ const IDCardBack = ({ data, cardId }: IDCardBackProps) => {
 
         {/* DIVISION / DEPARTMENT */}
         <div className="border border-card-border text-center text-[16px] font-extrabold py-2 mb-2">
-          {data.divisionName || "NWR BKN"}
+          {data.designation || "Hirer"}
         </div>
 
         {/* MOBILE NUMBER */}
@@ -76,7 +76,8 @@ const IDCardBack = ({ data, cardId }: IDCardBackProps) => {
         <div className="text-[8px] leading-tight mb-1">
           <p className="font-semibold">Validity of Contract:</p>
           <p>
-            From {formatDate(data.contractValidityDate)} To {formatDate(data.contractExpiryDate)}
+            From {formatDate(data.contractValidityDate)} To{" "}
+            {formatDate(data.contractExpiryDate)}
           </p>
         </div>
 
