@@ -15,7 +15,7 @@ import { CardFormData, CardFiles, CardDataComplete, initialFormData } from '@/ty
 import { cardApi } from '@/lib/api';
 import { toast } from 'sonner';
 import { ArrowLeft, Download, FileImage, FileText, Loader2 } from 'lucide-react';
-import html2canvas from 'html2canvas';
+import { renderNodeToPng, downloadDataUrl } from '@/lib/renderToImage';
 import jsPDF from 'jspdf';
 
 const EditCardPage = () => {
@@ -97,28 +97,19 @@ const EditCardPage = () => {
     }
   };
 
-  const generateCanvas = async () => {
+  const renderImage = async () => {
     if (!cardRef.current) return null;
-    
-    return html2canvas(cardRef.current, {
-      scale: 3,
-      useCORS: true,
-      allowTaint: true,
-      backgroundColor: '#ffffff',
-      logging: false,
-    });
+
+    return renderNodeToPng(cardRef.current, { pixelRatio: 3, backgroundColor: '#ffffff' });
   };
 
   const downloadAsPNG = async () => {
     setIsDownloading(true);
     try {
-      const canvas = await generateCanvas();
-      if (!canvas) throw new Error('Failed to generate canvas');
+      const rendered = await renderImage();
+      if (!rendered) throw new Error('Failed to render image');
 
-      const link = document.createElement('a');
-      link.download = `${previewData.employeeName || 'ID-Card'}_card.png`;
-      link.href = canvas.toDataURL('image/png');
-      link.click();
+      downloadDataUrl(rendered.dataUrl, `${previewData.employeeName || 'ID-Card'}_card.png`);
       toast.success('Card downloaded as PNG');
     } catch (error) {
       toast.error('Failed to download card');
@@ -131,10 +122,10 @@ const EditCardPage = () => {
   const downloadAsPDF = async () => {
     setIsDownloading(true);
     try {
-      const canvas = await generateCanvas();
-      if (!canvas) throw new Error('Failed to generate canvas');
+      const rendered = await renderImage();
+      if (!rendered) throw new Error('Failed to render image');
 
-      const imgData = canvas.toDataURL('image/png');
+      const imgData = rendered.dataUrl;
       
       const cardWidth = 87;
       const cardHeight = 54 * 2 + 10;
@@ -146,7 +137,7 @@ const EditCardPage = () => {
       });
 
       const imgWidth = cardWidth;
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      const imgHeight = (rendered.height * imgWidth) / rendered.width;
       
       pdf.addImage(imgData, 'PNG', 10, 10, imgWidth, imgHeight);
       pdf.save(`${previewData.employeeName || 'ID-Card'}_card.pdf`);
