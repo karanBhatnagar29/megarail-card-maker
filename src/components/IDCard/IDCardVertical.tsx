@@ -124,14 +124,23 @@ const IDCardVertical = forwardRef<HTMLDivElement, IDCardVerticalProps>(
           </div>
 
           <div className="ml-6 h-full flex flex-col p-3">
-            <div style={{ display: "flex", justifyContent: "space-between", gap: "8px", alignItems: "center", marginBottom: "8px" }}>
-              <div style={{ width: "64px", height: "64px", border: "1px solid #000", padding: "2px", display: "flex", alignItems: "center", justifyContent: "center", backgroundColor: "white" }}>
-                <QRCodeSVG value={qrData} size={56} />
-              </div>
-              <div style={{ width: "64px", height: "64px", border: "1px solid #000", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: "24px", backgroundColor: "white", textAlign: "center" }}>
-                {data.bloodGroup}
-              </div>
-            </div>
+            {/* QR and Blood Group row - using table layout for html2canvas compatibility */}
+            <table style={{ width: "100%", marginBottom: "8px", borderCollapse: "collapse" }}>
+              <tbody>
+                <tr>
+                  <td style={{ width: "50%", textAlign: "center", verticalAlign: "middle", padding: "0 4px 0 0" }}>
+                    <div style={{ width: "64px", height: "64px", border: "1px solid #000", padding: "2px", display: "inline-block", backgroundColor: "white", lineHeight: 0 }}>
+                      <QRCodeSVG value={qrData} size={56} />
+                    </div>
+                  </td>
+                  <td style={{ width: "50%", textAlign: "center", verticalAlign: "middle", padding: "0 0 0 4px" }}>
+                    <div style={{ width: "64px", height: "64px", border: "1px solid #000", display: "inline-flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: "24px", backgroundColor: "white" }}>
+                      {data.bloodGroup}
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
 
             <div style={{ border: "1px solid #000", textAlign: "center", fontWeight: 800, padding: "4px 0", marginBottom: "4px", backgroundColor: "white" }}>
               {data.divisionName}
