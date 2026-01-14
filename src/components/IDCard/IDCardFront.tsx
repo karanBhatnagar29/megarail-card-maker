@@ -59,7 +59,7 @@ const IDCardFront = ({ data, photoUrl }: IDCardFrontProps) => {
 
         {/* Manual Name / Designation Box */}
         <div className="flex justify-center mb-2">
-          <div className="w-[150px] h-[22px]   border border-card-border"></div>
+          <div className="w-[150px] h-[22px] bg-white border border-card-border"></div>
         </div>
 
         {/* Employee Name */}
