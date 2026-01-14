@@ -14,8 +14,8 @@ const IDCardFront = ({ data, photoUrl }: IDCardFrontProps) => {
       className="bg-card-orange rounded-lg overflow-hidden border-2 border-card-border relative"
       style={{ width: "54mm", height: "87mm" }}
     >
-      {/* ON CONTRACT – BIG, ORANGE THEME */}
-      <div className="absolute left-0 top-0 bottom-0 w-8 bg-card-orange-dark flex items-center justify-center">
+      {/* ON CONTRACT – SAME ORANGE with slight black divider */}
+      <div className="absolute left-0 top-0 bottom-0 w-8 bg-card-orange flex items-center justify-center border-r border-black/40">
         <span
           className="text-black font-extrabold text-[18px] tracking-widest"
           style={{
@@ -41,9 +41,8 @@ const IDCardFront = ({ data, photoUrl }: IDCardFrontProps) => {
           </p>
         </div>
 
-        {/* BIG PHOTO (dominant like PDF) */}
-        {/* PERFECT SQUARE PHOTO */}
-        <div className="flex justify-center mb-2 mt-1 ">
+        {/* PHOTO */}
+        <div className="flex justify-center mb-2 mt-1">
           <div className="w-[150px] h-[150px] bg-white border-2 border-card-border overflow-hidden">
             {photoUrl || data.photo ? (
               <img

@@ -9,7 +9,6 @@ interface IDCardBackProps {
 }
 
 const IDCardBack = ({ data, cardId }: IDCardBackProps) => {
-  const baseUrl = window.location.origin;
   const qrData = `https://megarail.vercel.app/verify/${
     cardId || data._id || ""
   }`;
@@ -28,8 +27,8 @@ const IDCardBack = ({ data, cardId }: IDCardBackProps) => {
       className="bg-card-orange rounded-lg overflow-hidden border-2 border-card-border relative"
       style={{ width: "54mm", height: "87mm" }}
     >
-      {/* ON CONTRACT STRIP */}
-      <div className="absolute left-0 top-0 bottom-0 w-8 bg-card-orange-dark flex items-center justify-center">
+      {/* ON CONTRACT STRIP — SAME ORANGE with divider */}
+      <div className="absolute left-0 top-0 bottom-0 w-8 bg-card-orange flex items-center justify-center border-r border-black/40">
         <span
           className="text-black font-extrabold text-[18px] tracking-widest"
           style={{
@@ -44,21 +43,21 @@ const IDCardBack = ({ data, cardId }: IDCardBackProps) => {
 
       {/* MAIN CONTENT */}
       <div className="ml-8 h-full flex flex-col px-2 py-2 text-card-text font-card">
-        {/* TOP ROW — QR & BLOOD (PDF SIZE MATCH) */}
+        {/* TOP ROW — QR & BLOOD */}
         <div className="flex justify-between gap-1 items-center mb-2">
-          {/* QR CODE — LARGE */}
-          <div className="w-[20mm] h-[20mm] border border-card-border p-0.25 flex items-center justify-center">
+          {/* QR CODE */}
+          <div className="w-[20mm] h-[20mm] border border-card-border p-0.25 flex items-center justify-center bg-white">
             <QRCodeSVG value={qrData} size={72} level="L" />
           </div>
 
-          {/* BLOOD GROUP — SAME SIZE */}
-          <div className="w-[20mm] h-[20mm] border border-card-border flex items-center justify-center font-extrabold text-[30px]">
+          {/* BLOOD GROUP */}
+          <div className="w-[20mm] h-[20mm] border border-card-border flex items-center justify-center font-extrabold text-[30px] bg-white">
             {data.bloodGroup || "B+"}
           </div>
         </div>
 
         {/* DIVISION / DEPARTMENT */}
-        <div className="border border-card-border text-center text-[16px] font-extrabold py-2 mb-2">
+        <div className="border border-card-border text-center text-[16px] font-extrabold py-2 mb-2 bg-white">
           {data.designation || "Hirer"}
         </div>
 
@@ -68,7 +67,7 @@ const IDCardBack = ({ data, cardId }: IDCardBackProps) => {
         </div>
 
         {/* COMPANY NAME */}
-        <div className=" text-[9px] font-semibold mb-1">
+        <div className="text-[9px] font-semibold mb-1">
           {data.profileName || "Company Name"}
         </div>
 
