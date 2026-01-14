@@ -23,7 +23,7 @@ import {
   FileText,
   Loader2,
 } from "lucide-react";
-import html2canvas from "html2canvas";
+import { renderNodeToPng, downloadDataUrl } from "@/lib/renderToImage";
 import jsPDF from "jspdf";
 import IDCardFront from "@/components/IDCard/IDCardFront";
 import IDCardBack from "@/components/IDCard/IDCardBack";
@@ -67,28 +67,19 @@ const CardViewPage = () => {
     ? new Date(card.validTill) < new Date()
     : false;
 
-  const generateCanvas = async () => {
+  const renderImage = async () => {
     if (!cardRef.current) return null;
 
-    return html2canvas(cardRef.current, {
-      scale: 3,
-      useCORS: true,
-      allowTaint: true,
-      backgroundColor: "#ffffff",
-      logging: false,
-    });
+    return renderNodeToPng(cardRef.current, { pixelRatio: 3, backgroundColor: "#ffffff" });
   };
 
   const downloadAsPNG = async () => {
     setIsDownloading(true);
     try {
-      const canvas = await generateCanvas();
-      if (!canvas) throw new Error("Failed to generate canvas");
+      const rendered = await renderImage();
+      if (!rendered) throw new Error("Failed to render image");
 
-      const link = document.createElement("a");
-      link.download = `${card?.employeeName || "ID-Card"}_card.png`;
-      link.href = canvas.toDataURL("image/png");
-      link.click();
+      downloadDataUrl(rendered.dataUrl, `${card?.employeeName || "ID-Card"}_card.png`);
       toast.success("Card downloaded as PNG");
     } catch (error) {
       toast.error("Failed to download card");
@@ -101,14 +92,14 @@ const CardViewPage = () => {
   const downloadAsPDF = async () => {
     setIsDownloading(true);
     try {
-      const canvas = await generateCanvas();
-      if (!canvas) throw new Error("Failed to generate canvas");
+      const rendered = await renderImage();
+      if (!rendered) throw new Error("Failed to render image");
 
-      const imgData = canvas.toDataURL("image/png");
+      const imgData = rendered.dataUrl;
 
       // ✅ Dynamic PDF size based on canvas aspect ratio
       const pdfWidth = 54; // mm (standard card width)
-      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+      const pdfHeight = (rendered.height * pdfWidth) / rendered.width;
 
       const pdf = new jsPDF({
         orientation: pdfHeight > pdfWidth ? "portrait" : "landscape",
