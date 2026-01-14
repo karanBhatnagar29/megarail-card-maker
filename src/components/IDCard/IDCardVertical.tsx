@@ -124,12 +124,16 @@ const IDCardVertical = forwardRef<HTMLDivElement, IDCardVerticalProps>(
           </div>
 
           <div className="ml-6 h-full flex flex-col p-3">
-            <div className="flex justify-between mb-2">
-              <QRCodeSVG value={qrData} size={60} />
-              <div className="text-xl font-bold">{data.bloodGroup}</div>
+          <div className="flex justify-between gap-2 items-center mb-2">
+              <div className="w-16 h-16 border border-card-border p-0.5 flex items-center justify-center bg-white">
+                <QRCodeSVG value={qrData} size={56} />
+              </div>
+              <div className="w-16 h-16 border border-card-border flex items-center justify-center font-extrabold text-2xl bg-white">
+                {data.bloodGroup}
+              </div>
             </div>
 
-            <div className="border text-center font-bold py-1 mb-1">
+            <div className="border border-card-border text-center font-extrabold py-1 mb-1 bg-white">
               {data.divisionName}
             </div>
 
