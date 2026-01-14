@@ -124,20 +124,29 @@ const IDCardVertical = forwardRef<HTMLDivElement, IDCardVerticalProps>(
           </div>
 
           <div className="ml-6 h-full flex flex-col p-3">
-            <div className="flex justify-between gap-2 items-center mb-2">
-              <div className="w-16 h-16 border border-card-border p-0.5 flex items-center justify-center bg-white">
-                <QRCodeSVG value={qrData} size={56} />
-              </div>
-              <div className="w-16 h-16 border border-card-border flex items-center justify-center font-extrabold text-2xl bg-white">
-                {data.bloodGroup}
-              </div>
-            </div>
+            {/* QR and Blood Group row - using table layout for html2canvas compatibility */}
+            <table style={{ width: "100%", marginBottom: "8px", borderCollapse: "collapse" }}>
+              <tbody>
+                <tr>
+                  <td style={{ width: "50%", textAlign: "center", verticalAlign: "middle", padding: "0 4px 0 0" }}>
+                    <div style={{ width: "64px", height: "64px", border: "1px solid #000", padding: "2px", display: "inline-block", backgroundColor: "white", lineHeight: 0 }}>
+                      <QRCodeSVG value={qrData} size={56} />
+                    </div>
+                  </td>
+                  <td style={{ width: "50%", textAlign: "center", verticalAlign: "middle", padding: "0 0 0 4px" }}>
+                    <div style={{ width: "64px", height: "64px", border: "1px solid #000", display: "inline-flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: "24px", backgroundColor: "white" }}>
+                      {data.bloodGroup}
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
 
-            <div className="border border-card-border text-center font-extrabold py-1 mb-1 bg-white">
+            <div style={{ border: "1px solid #000", textAlign: "center", fontWeight: 800, padding: "4px 0", marginBottom: "4px", backgroundColor: "white" }}>
               {data.divisionName}
             </div>
 
-            <div className="text-center text-lg font-bold mb-1">
+            <div style={{ textAlign: "center", fontSize: "18px", fontWeight: 700, marginBottom: "4px" }}>
               {data.mobileNumber}
             </div>
 
