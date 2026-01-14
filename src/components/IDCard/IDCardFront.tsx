@@ -11,6 +11,7 @@ interface IDCardFrontProps {
 const IDCardFront = ({ data, photoUrl }: IDCardFrontProps) => {
   return (
     <div
+      data-id-card
       className="bg-card-orange rounded-lg overflow-hidden border-2 border-card-border relative"
       style={{ width: "54mm", height: "87mm" }}
     >
@@ -43,7 +44,7 @@ const IDCardFront = ({ data, photoUrl }: IDCardFrontProps) => {
 
         {/* PHOTO */}
         <div className="flex justify-center mb-2 mt-1">
-          <div className="w-[150px] h-[150px] bg-white border-2 border-card-border overflow-hidden">
+          <div className="w-[150px] h-[150px]  border-2 border-card-border overflow-hidden">
             {photoUrl || data.photo ? (
               <img
                 src={photoUrl || data.photo}
@@ -58,7 +59,7 @@ const IDCardFront = ({ data, photoUrl }: IDCardFrontProps) => {
 
         {/* Manual Name / Designation Box */}
         <div className="flex justify-center mb-2">
-          <div className="w-[150px] h-[22px] bg-white border border-card-border"></div>
+          <div className="w-[150px] h-[22px]   border border-card-border"></div>
         </div>
 
         {/* Employee Name */}

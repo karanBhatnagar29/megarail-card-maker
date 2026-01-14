@@ -24,10 +24,11 @@ const IDCardBack = ({ data, cardId }: IDCardBackProps) => {
 
   return (
     <div
+      data-id-card
       className="bg-card-orange rounded-lg overflow-hidden border-2 border-card-border relative"
       style={{ width: "54mm", height: "87mm" }}
     >
-      {/* ON CONTRACT STRIP — SAME ORANGE with divider */}
+      {/* SIDEBAR STRIP - ON CONTRACT */}
       <div className="absolute left-0 top-0 bottom-0 w-8 bg-card-orange flex items-center justify-center border-r border-black/40">
         <span
           className="text-black font-extrabold text-[18px] tracking-widest"
@@ -41,28 +42,58 @@ const IDCardBack = ({ data, cardId }: IDCardBackProps) => {
         </span>
       </div>
 
-      {/* MAIN CONTENT */}
+      {/* MAIN CONTENT AREA */}
       <div className="ml-8 h-full flex flex-col px-2 py-2 text-card-text font-card">
-        {/* TOP ROW — QR & BLOOD */}
+        {/* TOP ROW — QR & BLOOD GROUP */}
         <div className="flex justify-between gap-1 items-center mb-2">
-          {/* QR CODE */}
-          <div className="w-[20mm] h-[20mm] border border-card-border p-0.25 flex items-center justify-center bg-white">
-            <QRCodeSVG value={qrData} size={72} level="L" />
+          {/* ✅ QR CODE (UPDATED: GRID CENTER) */}
+          <div
+            data-mm-box
+            className="w-[20mm] h-[20mm] border border-card-border overflow-hidden relative"
+          >
+            <div className="absolute inset-0 flex items-center justify-center">
+              <QRCodeSVG
+                value={qrData}
+                size={68}
+                level="L"
+                style={{ display: "block" }}
+              />
+            </div>
           </div>
 
-          {/* BLOOD GROUP */}
-          <div className="w-[20mm] h-[20mm] border border-card-border flex items-center justify-center font-extrabold text-[30px] bg-white">
-            {data.bloodGroup || "B+"}
+          {/* ✅ BLOOD GROUP (GRID CENTER) */}
+          <div
+            data-mm-box
+            className="w-[20mm] h-[20mm] border border-card-border overflow-hidden relative"
+          >
+            <div
+              data-center-overlay
+              className="absolute inset-0 flex items-center justify-center"
+            >
+              <span className="font-extrabold text-[30px] leading-none">
+                {data.bloodGroup || "B+"}
+              </span>
+            </div>
           </div>
         </div>
 
-        {/* DIVISION / DEPARTMENT */}
-        <div className="border border-card-border text-center text-[16px] font-extrabold py-2 mb-2 bg-white">
-          {data.designation || "Hirer"}
+        {/* ✅ DESIGNATION (GRID CENTER) */}
+        <div
+          data-designation-box
+          className="border border-card-border h-[32px] mb-2 overflow-hidden px-1 relative"
+        >
+          <div
+            data-center-overlay
+            className="absolute inset-0 flex items-center justify-center px-1"
+          >
+            <span className="text-[16px] font-extrabold leading-none whitespace-nowrap">
+              {data.designation || "Hirer"}
+            </span>
+          </div>
         </div>
 
         {/* MOBILE NUMBER */}
-        <div className="text-center text-[18px] font-extrabold mb-2">
+        <div className="text-center text-[18px] font-extrabold mb-2 leading-none">
           {data.mobileNumber || "9999999999"}
         </div>
 
@@ -71,25 +102,25 @@ const IDCardBack = ({ data, cardId }: IDCardBackProps) => {
           {data.profileName || "Company Name"}
         </div>
 
-        {/* VALIDITY */}
+        {/* VALIDITY DATES */}
         <div className="text-[8px] leading-tight mb-1">
-          <p className="font-semibold">Validity of Contract:</p>
-          <p>
+          <p className="font-bold">Validity of Contract:</p>
+          <p className="font-bold uppercase">
             From {formatDate(data.contractValidityDate)} To{" "}
             {formatDate(data.contractExpiryDate)}
           </p>
         </div>
 
         {/* ISSUE INFO */}
-        <div className="text-[8px] leading-tight border-t border-card-border pt-1 mb-auto">
-          <p className="font-semibold">Date of Issue</p>
-          <p>Validity: 01 year from the date of issue</p>
+        <div className="text-[8px] leading-tight border-card-border pt-1 mb-auto">
+          <p className="font-bold">Date of Issue</p>
+          <p className="font-bold">Validity: 01 year from the date of issue</p>
         </div>
 
-        {/* INSTRUCTION — BOTTOM */}
-        <div className="text-[7px] leading-tight border-t border-card-border pt-1 text-center">
+        {/* INSTRUCTION — FIXED AT BOTTOM */}
+        <div className="text-[7px] leading-tight border-t border-card-border pt-1 text-center mt-auto">
           <p className="font-bold">Instruction</p>
-          <p>
+          <p className="font-bold">
             Please surrender to issuing authority on completion of contractual
             services
           </p>
