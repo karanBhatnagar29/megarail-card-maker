@@ -316,9 +316,7 @@ const CardForm = ({
       {/* Validity */}
       <Card>
         <CardHeader className="pb-4">
-          <CardTitle className="text-lg font-display">
-            Validity Contract
-          </CardTitle>
+          <CardTitle className="text-lg font-display">Card Validity</CardTitle>
         </CardHeader>
         <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
@@ -346,7 +344,9 @@ const CardForm = ({
       </Card>
       <Card>
         <CardHeader className="pb-4">
-          <CardTitle className="text-lg font-display">Card Validity</CardTitle>
+          <CardTitle className="text-lg font-display">
+            Validity Contract
+          </CardTitle>
         </CardHeader>
         <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
